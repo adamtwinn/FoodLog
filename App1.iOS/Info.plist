@@ -21,25 +21,86 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>8.0</string>
+	<string>9.0</string>
 	<key>CFBundleDisplayName</key>
 	<string>FoodLog</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.ttint.FoodLog</string>
 	<key>CFBundleVersion</key>
-	<string>1.4</string>
+	<string>1.14</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>CFBundleName</key>
-	<string>App1</string>
-	<key>XSAppIconAssets</key>
-	<string>Assets.xcassets/AppIcon.appiconset</string>
+	<string>FoodLog</string>
+  <key>XSAppIconAssets</key>
+  <string>Assets.xcassets/AppIcon.appiconset</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Required for login via XenMobile.</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSHealthShareUsageDescription </key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSHomeKitUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSLocationAlwaysUsageDescription </key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSSiriUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSVideoSubscriberAccountUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This isn&apos;t required - please report this.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
+      <key>dominicshaw.net</key>
+      <dict>
+        <key>NSExceptionAllowsInsecureHTTPLoads</key>
+        <true/>
+        <key>NSIncludesSubdomains</key>
+        <true/>
+        <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+        <false/>
+		  </dict>
+		  <key>lonhapp01</key>
+		  <dict>
+		    <key>NSExceptionAllowsInsecureHTTPLoads</key>
+		    <true/>
+		    <key>NSIncludesSubdomains</key>
+		    <true/>
+		    <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+		    <false/>
+		  </dict>
 			<key>lonhapp02</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
@@ -49,15 +110,15 @@
 				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
 				<false/>
 			</dict>
-		  <key>lonhapp02.ttint.com</key>
-		  <dict>
-		    <key>NSExceptionAllowsInsecureHTTPLoads</key>
-		    <true/>
-		    <key>NSIncludesSubdomains</key>
-		    <true/>
-		    <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
-		    <false/>
-		  </dict>
+			<key>skrybe</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
 		</dict>
 	</dict>
 </dict>

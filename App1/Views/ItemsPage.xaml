@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:helpers="clr-namespace:App1.Helpers;assembly=App1"
              xmlns:views="clr-namespace:App1.Views;assembly=App1"
+             xmlns:mvvm="clr-namespace:App1.MVVM;assembly=App1"
              x:Class="App1.Views.ItemsPage"
               Title="{Binding Title}"
              x:Name="BrowseItemsPage">
@@ -25,7 +26,11 @@
 
     <StackLayout Spacing="20" Padding="15">
 
-        <DatePicker Date="{Binding EntryDate}" Format="D"></DatePicker>
+        <DatePicker Date="{Binding EntryDate}" Format="D">
+            <DatePicker.Behaviors>
+                <mvvm:EventToCommandBehavior EventName="DateSelected" Command="{Binding GoToDateCommand}" Converter="{mvvm:SelectedDateToDateConverter}" />
+            </DatePicker.Behaviors>
+        </DatePicker>
         <views:EntryCellView BindingContext="{Binding SelectedEntryViewModel, Mode=TwoWay}" />
         <!--<views:SwitchCellView BindingContext="{Binding SelectedEntryViewModel, Mode=TwoWay}" />-->
         <views:StepperView BindingContext="{Binding SelectedEntryViewModel, Mode=TwoWay}" />

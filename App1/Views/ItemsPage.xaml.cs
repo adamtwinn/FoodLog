@@ -1,43 +1,39 @@
-﻿using System;
+﻿using App1.Helpers;
+using FoodLog.Common;
+using System;
 using System.Threading.Tasks;
-using App1.Helpers;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using FoodLog.Common;
 
 namespace App1.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class ItemsPage : ContentPage
+    public partial class ItemsPage
     {
-        readonly MainViewModel _viewModel;
+        private static readonly MainViewModel _viewModel;
+
+        static ItemsPage()
+        {
+            _viewModel = new MainViewModel(DependencyService.Get<IApiWrapper>());
+        }
 
         public ItemsPage()
         {
             InitializeComponent();
 
-            Messenger.Instance.Register<Notification>("Notification", async n =>
+            try
             {
-                await DisplayMessage(n);
-            });
-
-            Messenger.Instance.Register<Exception>("Exception", async ex => { await DisplayException(ex);});
-
-            BindingContext = _viewModel = new MainViewModel(new ApiWrapper());
+                Messenger.Instance.Register<Notification>("Notification", async n => { await DisplayMessage(n); });
+                Messenger.Instance.Register<Exception>("Exception", async ex => { await DisplayException(ex); });
+                
+                BindingContext = _viewModel;
+            }
+            catch (Exception ex)
+            {
+                Reporter.ReportException(ex);
+            }
         }
 
-        //async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
-        //{
-        //    var item = args.SelectedItem as EntryViewModel;
-        //    if (item == null)
-        //        return;
-
-        //    await Navigation.PushAsync(new ItemDetailPage(new ItemDetailViewModel(item)));
-
-        //    // Manually deselect item.
-        //    ItemsListView.SelectedItem = null;
-        //}
-        
         private async Task DisplayMessage(Notification notification)
         {
             if (string.IsNullOrEmpty(notification.Cancel))
@@ -48,8 +44,8 @@ namespace App1.Views
         }
 
         private async Task DisplayException(Exception exception)
-        {            
-            await DisplayAlert("Error", exception.Message, "OK");            
+        {
+            await DisplayAlert("Error", exception.Message, "OK");
         }
 
         protected override async void OnAppearing()

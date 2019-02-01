@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using App1.Helpers;
 using FoodLog.Common;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -21,6 +22,7 @@ namespace App1.Views
             MenuPages.Add((int)MenuItemType.Browse, (NavigationPage)Detail);
 
             Messenger.Instance.Register<Exception>("Exception", async ex => { await DisplayException(ex); });
+            Messenger.Instance.Register<LogEvent>("Log", log => { Reporter.Track(log.EventName, log.Data); });
         }
 
         private async Task DisplayException(Exception exception)

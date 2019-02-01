@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -19,15 +20,16 @@ namespace FoodLog.Common
 
         private EntryViewModel _selectedEntryViewModel;
         private DateTime _entryDate = DateTime.Now.Date;
+        private bool _started;
 
         public EntryViewModel SelectedEntryViewModel
         {
             get { return _selectedEntryViewModel; }
             set
             {
+                if (value.Equals(_selectedEntryViewModel)) return;
                 _selectedEntryViewModel = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(EntryDate));
             }
         }
 
@@ -44,7 +46,7 @@ namespace FoodLog.Common
 
         public ICommand SaveCommand => new AsyncCommand(Save);
         public ICommand RefreshCommand => new AsyncCommand(Refresh);
-        public ICommand GoToDateCommand => new Command<DateTime>(GoToDate);
+        public ICommand GoToDateCommand => new Command<DateTime>(DateSelectedCommand);
         public ICommand ForwardCommand => new Command(Forward);
         public ICommand BackCommand => new Command(Back);
         public ICommand ClearCommand => new Command(Clear);
@@ -59,34 +61,43 @@ namespace FoodLog.Common
         public async Task Start()
         {
             Messenger.Instance.NotifyColleagues("Log", new LogEvent("Starting MainViewModel...", new Dictionary<string, string>()));
-           await Refresh();
+            await Refresh();
         }
 
         private void AddNew()
         {
-            GoToDate(Entries.OrderByDescending(x => x.Date).First().Date.AddDays(1));
+            EntryDate = Entries.OrderByDescending(x => x.Date).First().Date.AddDays(1);
+            GoToDate();
         }
 
         private void Forward()
         {
-            GoToDate(SelectedEntryViewModel.Date.AddDays(1));
+            EntryDate = EntryDate.AddDays(1);
+            GoToDate();
         }
 
         private void Back()
         {
-            GoToDate(SelectedEntryViewModel.Date.AddDays(-1));
+            EntryDate = EntryDate.AddDays(-1);
+            GoToDate();
+        }
+        private void DateSelectedCommand(DateTime dt)
+        {
+            EntryDate = dt;
+            GoToDate();
         }
 
-        private void GoToDate(DateTime dt)
+        private void GoToDate()
         {
-            Messenger.Instance.NotifyColleagues("Log", new LogEvent("Running Go-To-Date...", new Dictionary<string, string> {{"Date", dt.ToString(CultureInfo.InvariantCulture)}}));
-            var shortDate = dt.Date;
+            Messenger.Instance.NotifyColleagues("Log",
+                new LogEvent("Running Go-To-Date...",
+                    new Dictionary<string, string> { { "Date", EntryDate.ToString(CultureInfo.InvariantCulture) } }));
 
-            var entry = Entries.FirstOrDefault(x => DateTime.Compare(x.Date.Date, shortDate) == 0);
+            var entry = Entries.FirstOrDefault(x => DateTime.Compare(x.Date.Date, EntryDate) == 0);
 
             if (entry == null)
             {
-                SelectedEntryViewModel = new EntryViewModel(shortDate);
+                SelectedEntryViewModel = new EntryViewModel(EntryDate);
                 Entries.Add(SelectedEntryViewModel);
             }
             else
@@ -107,7 +118,7 @@ namespace FoodLog.Common
 
                 if (Entries.Count > 0)
                 {
-                    SelectedEntryViewModel = Entries.OrderByDescending(x => x.Date).First();
+                    SelectedEntryViewModel = Entries.Where(x => x.EntryId != 0).OrderByDescending(x => x.Date).First();
                     EntryDate = SelectedEntryViewModel.Date;
                 }
             }
@@ -122,17 +133,23 @@ namespace FoodLog.Common
             try
             {
                 var updatedEntries = Entries.Where(x => x.Updated).ToList();
+                var successfulUpdates = 0;
 
                 foreach (var entry in updatedEntries)
                 {
-                    await _api.Save(entry);
-                    entry.Updated = false;
+                    if (await _api.Save(entry))
+                    {
+                        successfulUpdates++;
 
-                    if (!Entries.Contains(SelectedEntryViewModel))
-                        Entries.Add(SelectedEntryViewModel);
+                        entry.Updated = false;
+
+                        if (!Entries.Contains(SelectedEntryViewModel))
+                            Entries.Add(SelectedEntryViewModel);
+                    }
+
                 }
 
-                var message = string.Format("{0} {1} updated", updatedEntries.Count, updatedEntries.Count == 1 ? "entry" : "entries");
+                var message = string.Format("{0} out of {1} entries updated", successfulUpdates, updatedEntries.Count);
 
                 Messenger.Instance.NotifyColleagues("Notification", new Notification("Save", message));
             }

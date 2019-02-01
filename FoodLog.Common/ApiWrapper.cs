@@ -17,7 +17,7 @@ namespace FoodLog.Common
 
         private static readonly HttpClient _client = new HttpClient();
 
-        private const string Server = "http://food.dominicshaw.net";
+        private const string Server = "http://lonhapp02.ttint.com:5000";
         
         public async Task <bool> Delete(EntryViewModel entryViewModel)
         {

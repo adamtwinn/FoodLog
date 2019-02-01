@@ -9,12 +9,14 @@
         xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:common="clr-namespace:FoodLog.Common;assembly=FoodLog.Common"
+        xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+        xmlns:viewModels="clr-namespace:FoodLog.Wpf.ViewModels"
         x:Class="FoodLog.Wpf.MainWindow"
                  mc:Ignorable="d"
                  Title="Food Diary" Height="510" Width="550" d:DataContext="{d:DesignInstance {x:Type common:MainViewModel}}" Icon="pack://application:,,,/FoodLog.Wpf;component/Images/meal.png">
 
     <dx:ThemedWindow.Resources>
-                
+
         <Style x:Key="DairyStyle" TargetType="{x:Type dxe:CheckEdit}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -136,7 +138,7 @@
         </Style>
 
     </dx:ThemedWindow.Resources>
-    
+
 
     <DockPanel>
         <dxb:BarContainerControl DockPanel.Dock="Top" ContainerType="Top">
@@ -150,7 +152,7 @@
                                    KeyGesture="Ctrl+F5"
                                    Command="{Binding RefreshCommand}"                                   
                                    Description="Refresh from Database" />
-                
+
                 <dxb:BarButtonItem x:Name="bSave"
                                    CategoryName="File"
                                    Content="_Save"
@@ -170,8 +172,8 @@
                                    Command="{Binding ClearCommand}"
                                    Description="Clears the active entry." />
                 <dxb:BarItemLinkSeparator />
-                
-                
+
+
                 <dxb:BarItemLinkSeparator />
                 <dxb:BarButtonItem x:Name="bBack"
                                    CategoryName="Navigation"
@@ -200,67 +202,77 @@
             </Grid.RowDefinitions>
 
             <!--<TextBlock Grid.Row="0" Width="200" HorizontalAlignment="Center" TextAlignment="Center" Margin="10,20,10,10" FontSize="20"  Text="{Binding SelectedEntryViewModel.DateString}" FontFamily="Verdana"></TextBlock>-->
-            <dxe:DateEdit Name="DteEntryDate"  Grid.Row="0" Width="300" HorizontalContentAlignment="Center" HorizontalAlignment="Center"  Margin="10,20,10,10" FontSize="18" Text="{Binding EntryDate}" FontFamily="Verdana" Mask="dddd, dd MMM yyyy" MaskUseAsDisplayFormat="True"></dxe:DateEdit>
+            <dxe:DateEdit Grid.Row="0" Width="292" HorizontalContentAlignment="Center" HorizontalAlignment="Center"  
+                          Margin="0,20,0,10" FontSize="18" EditValue="{Binding SelectedEntryViewModel.Date, Mode=OneWay}" 
+                          FontFamily="Verdana" Mask="dddd, dd MMM yyyy" MaskUseAsDisplayFormat="True">
+                <dxmvvm:Interaction.Behaviors>
+                    <dxmvvm:EventToCommand EventName="EditValueChanged" Command="{Binding GoToDateCommand}">
+                        <dxmvvm:EventToCommand.EventArgsConverter>
+                            <viewModels:DateEditChangedToDateConverter/>
+                        </dxmvvm:EventToCommand.EventArgsConverter>
+                    </dxmvvm:EventToCommand>
+                </dxmvvm:Interaction.Behaviors>
+            </dxe:DateEdit>
 
             <dxlc:LayoutControl Grid.Row="1">
                 <dxlc:LayoutGroup Orientation="Horizontal">
-                <dxlc:LayoutGroup Header="Meals" Orientation="Vertical" View="GroupBox">
-                    <dxlc:LayoutItem Label="Breakfast:">
-                        <dxe:TextEdit Text="{Binding SelectedEntryViewModel.Breakfast}" MinHeight="60" TextWrapping="Wrap"></dxe:TextEdit>
-                    </dxlc:LayoutItem>
-                    <dxlc:LayoutItem Label="Lunch:">
+                    <dxlc:LayoutGroup Header="Meals" Orientation="Vertical" View="GroupBox">
+                        <dxlc:LayoutItem Label="Breakfast:">
+                            <dxe:TextEdit Text="{Binding SelectedEntryViewModel.Breakfast}" MinHeight="60" TextWrapping="Wrap"></dxe:TextEdit>
+                        </dxlc:LayoutItem>
+                        <dxlc:LayoutItem Label="Lunch:">
                             <dxe:TextEdit Text="{Binding SelectedEntryViewModel.Lunch}" MinHeight="60" TextWrapping="Wrap"></dxe:TextEdit>
-                    </dxlc:LayoutItem>
-                    <dxlc:LayoutItem Label="Dinner:">
+                        </dxlc:LayoutItem>
+                        <dxlc:LayoutItem Label="Dinner:">
                             <dxe:TextEdit Text="{Binding SelectedEntryViewModel.Dinner}" MinHeight="60" TextWrapping="Wrap"></dxe:TextEdit>
-                    </dxlc:LayoutItem>
-                    <dxlc:LayoutItem Label="Drinks/Snacks:">
+                        </dxlc:LayoutItem>
+                        <dxlc:LayoutItem Label="Drinks/Snacks:">
                             <dxe:TextEdit Text="{Binding SelectedEntryViewModel.SnacksDrinks}" MinHeight="60" TextWrapping="Wrap"></dxe:TextEdit>
-                    </dxlc:LayoutItem>
-                </dxlc:LayoutGroup>
-                <dxlc:LayoutGroup Header="Food Flags" View="GroupBox">
-                    <dxlc:LayoutGroup Orientation="Vertical">
+                        </dxlc:LayoutItem>
+                    </dxlc:LayoutGroup>
+                    <dxlc:LayoutGroup Header="Food Flags" View="GroupBox">
+                        <dxlc:LayoutGroup Orientation="Vertical">
 
-                        <dxlc:LayoutGroup Orientation="Horizontal">
-                            <dxlc:LayoutItem>
-                                <dxe:CheckEdit ToolTip="Dairy" Margin="5" Style="{StaticResource DairyStyle}" EditValue="{Binding SelectedEntryViewModel.Dairy}"></dxe:CheckEdit>
-                            </dxlc:LayoutItem>
-                            <dxlc:LayoutItem>
-                                <dxe:CheckEdit ToolTip="Gluten" Margin="5" Style="{StaticResource GlutenStyle}" EditValue="{Binding SelectedEntryViewModel.Gluten}"></dxe:CheckEdit>
-                            </dxlc:LayoutItem>
+                            <dxlc:LayoutGroup Orientation="Horizontal">
+                                <dxlc:LayoutItem>
+                                    <dxe:CheckEdit ToolTip="Dairy" Margin="5" Style="{StaticResource DairyStyle}" EditValue="{Binding SelectedEntryViewModel.Dairy}"></dxe:CheckEdit>
+                                </dxlc:LayoutItem>
+                                <dxlc:LayoutItem>
+                                    <dxe:CheckEdit ToolTip="Gluten" Margin="5" Style="{StaticResource GlutenStyle}" EditValue="{Binding SelectedEntryViewModel.Gluten}"></dxe:CheckEdit>
+                                </dxlc:LayoutItem>
+                            </dxlc:LayoutGroup>
+
+                            <dxlc:LayoutGroup Orientation="Horizontal">
+                                <dxlc:LayoutItem>
+                                    <dxe:CheckEdit ToolTip="Fatty Food" Margin="5" Style="{StaticResource FattyStyle}" EditValue="{Binding SelectedEntryViewModel.FattyFood}"></dxe:CheckEdit>
+                                </dxlc:LayoutItem>
+                                <dxlc:LayoutItem>
+                                    <dxe:CheckEdit ToolTip="Spicy" Margin="5" Style="{StaticResource SpiceStyle}" EditValue="{Binding SelectedEntryViewModel.Spice}"></dxe:CheckEdit>
+                                </dxlc:LayoutItem>
+                            </dxlc:LayoutGroup>
+
+                            <dxlc:LayoutGroup Orientation="Horizontal">
+                                <dxlc:LayoutItem>
+                                    <dxe:CheckEdit ToolTip="Onions/Pulses" Margin="5" Style="{StaticResource OnionStyle}" EditValue="{Binding SelectedEntryViewModel.OnionsPulses}"></dxe:CheckEdit>
+                                </dxlc:LayoutItem>
+                                <dxlc:LayoutItem>
+                                    <dxe:CheckEdit ToolTip="Exercise" Margin="5" Style="{StaticResource ExerciseStyle}" EditValue="{Binding SelectedEntryViewModel.Exercise}"></dxe:CheckEdit>
+                                </dxlc:LayoutItem>
+                            </dxlc:LayoutGroup>
+
+                            <dxlc:LayoutGroup Orientation="Horizontal">
+                                <dxlc:LayoutItem>
+                                    <dxe:CheckEdit ToolTip="Alcohol" Margin="5" Style="{StaticResource AlcoholStyle}" EditValue="{Binding SelectedEntryViewModel.Alcohol}"></dxe:CheckEdit>
+                                </dxlc:LayoutItem>
+                                <dxlc:LayoutItem>
+                                    <dxe:CheckEdit ToolTip="Caffeine" Margin="5" Style="{StaticResource CaffeineStyle}" EditValue="{Binding SelectedEntryViewModel.Caffeine}"></dxe:CheckEdit>
+                                </dxlc:LayoutItem>
+                            </dxlc:LayoutGroup>
+
                         </dxlc:LayoutGroup>
 
-                        <dxlc:LayoutGroup Orientation="Horizontal">
-                            <dxlc:LayoutItem>
-                                <dxe:CheckEdit ToolTip="Fatty Food" Margin="5" Style="{StaticResource FattyStyle}" EditValue="{Binding SelectedEntryViewModel.FattyFood}"></dxe:CheckEdit>
-                            </dxlc:LayoutItem>
-                            <dxlc:LayoutItem>
-                                <dxe:CheckEdit ToolTip="Spicy" Margin="5" Style="{StaticResource SpiceStyle}" EditValue="{Binding SelectedEntryViewModel.Spice}"></dxe:CheckEdit>
-                            </dxlc:LayoutItem>
-                        </dxlc:LayoutGroup>
 
-                        <dxlc:LayoutGroup Orientation="Horizontal">
-                            <dxlc:LayoutItem>
-                                <dxe:CheckEdit ToolTip="Onions/Pulses" Margin="5" Style="{StaticResource OnionStyle}" EditValue="{Binding SelectedEntryViewModel.OnionsPulses}"></dxe:CheckEdit>
-                            </dxlc:LayoutItem>
-                            <dxlc:LayoutItem>
-                                <dxe:CheckEdit ToolTip="Exercise" Margin="5" Style="{StaticResource ExerciseStyle}" EditValue="{Binding SelectedEntryViewModel.Exercise}"></dxe:CheckEdit>
-                            </dxlc:LayoutItem>
-                        </dxlc:LayoutGroup>
-
-                        <dxlc:LayoutGroup Orientation="Horizontal">
-                            <dxlc:LayoutItem>
-                                <dxe:CheckEdit ToolTip="Alcohol" Margin="5" Style="{StaticResource AlcoholStyle}" EditValue="{Binding SelectedEntryViewModel.Alcohol}"></dxe:CheckEdit>
-                            </dxlc:LayoutItem>
-                            <dxlc:LayoutItem>
-                                <dxe:CheckEdit ToolTip="Caffeine" Margin="5" Style="{StaticResource CaffeineStyle}" EditValue="{Binding SelectedEntryViewModel.Caffeine}"></dxe:CheckEdit>
-                            </dxlc:LayoutItem>
-                        </dxlc:LayoutGroup>
-
-                        </dxlc:LayoutGroup>
-                    
-                    
-                </dxlc:LayoutGroup>
+                    </dxlc:LayoutGroup>
                 </dxlc:LayoutGroup>
             </dxlc:LayoutControl>
 
@@ -271,9 +283,9 @@
                 </dxe:RatingEdit>
 
             </StackPanel>
-            
+
         </Grid>
-                      
+
     </DockPanel>
 
 </dx:ThemedWindow>

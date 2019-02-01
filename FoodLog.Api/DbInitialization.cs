@@ -10,7 +10,6 @@ namespace FoodLog.Api
         {
             using (var context = new FoodContext(configuration))
             {
-                context.Database.EnsureCreated();
                 context.Database.Migrate();
             }
         }

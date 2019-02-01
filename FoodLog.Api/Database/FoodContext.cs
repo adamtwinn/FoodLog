@@ -19,7 +19,7 @@ namespace FoodLog.Api.Database
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlite("Data Source=Food.db");
+                optionsBuilder.UseSqlite("Data Source=C:\\Local-Databases\\Food.db");
             }
         }
     }
